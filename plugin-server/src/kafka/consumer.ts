@@ -237,7 +237,7 @@ export class KafkaConsumer {
             'metadata.broker.list': 'kafka:9092', // Overridden with KAFKA_CONSUMER_METADATA_BROKER_LIST
             log_level: 4, // WARN as the default
             'group.id': this.config.groupId,
-            'session.timeout.ms': 30_000,
+            'session.timeout.ms': 300_000,
             'max.poll.interval.ms': 300_000,
             'max.partition.fetch.bytes': 1_048_576,
             'fetch.error.backoff.ms': 100,
@@ -247,7 +247,7 @@ export class KafkaConsumer {
             'queued.max.messages.kbytes': 102400, // 1048576 is the default, we go smaller to reduce mem usage.
             'client.rack': defaultConfig.KAFKA_CLIENT_RACK, // Helps with cross-AZ traffic awareness and is not unique to the consumer
             'metadata.max.age.ms': 30000, // Refresh metadata every 30s - Relevant for leader loss (MSK Security Patches)
-            'socket.timeout.ms': 30000,
+            'socket.timeout.ms': 300000,
             // Only enable statistics when using loop-based health check
             ...(defaultConfig.CONSUMER_LOOP_BASED_HEALTH_CHECK
                 ? { 'statistics.interval.ms': STATISTICS_INTERVAL_MS }

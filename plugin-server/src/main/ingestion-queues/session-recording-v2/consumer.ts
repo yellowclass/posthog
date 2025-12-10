@@ -1,4 +1,5 @@
 import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3'
+import { NodeHttpHandler } from '@smithy/node-http-handler'
 import { CODES, Message, TopicPartition, TopicPartitionOffset, features, librdkafkaVersion } from 'node-rdkafka'
 
 import { instrumentFn } from '~/common/tracing/tracing-utils'
@@ -103,10 +104,16 @@ export class SessionRecordingIngester {
             hub.SESSION_RECORDING_V2_S3_BUCKET &&
             hub.SESSION_RECORDING_V2_S3_PREFIX
         ) {
+            const timeoutMs = hub.SESSION_RECORDING_V2_S3_TIMEOUT_MS || 1200000
             const s3Config: S3ClientConfig = {
                 region: hub.SESSION_RECORDING_V2_S3_REGION,
                 endpoint: hub.SESSION_RECORDING_V2_S3_ENDPOINT,
                 forcePathStyle: true,
+                requestHandler: new NodeHttpHandler({
+                    socketTimeout: timeoutMs,
+                    requestTimeout: timeoutMs + 300000,
+                    connectionTimeout: 30000,
+                }),
             }
 
             if (hub.SESSION_RECORDING_V2_S3_ACCESS_KEY_ID && hub.SESSION_RECORDING_V2_S3_SECRET_ACCESS_KEY) {
